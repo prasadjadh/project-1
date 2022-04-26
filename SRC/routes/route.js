@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Controller=require("../controller/AuthorModel")
+const AuthorController=require("../controller/AuthorController")
 
 
 
 
-router.post("/AuthorController",Controller.AuthorController)
+router.post("/AuthorCreate",AuthorController.AuthorCreate)
 
 
 

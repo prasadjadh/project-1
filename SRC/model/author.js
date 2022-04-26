@@ -1,8 +1,13 @@
 const mongoose=require("mongoose")
-require('mongoose-type-email');
+// require('mongoose-type-email');
 
 
 const Author= new mongoose.Schema({
+    title:  {
+        type:String,
+        enum: ["Mr", "Mrs", "Miss"],
+        required:true
+    },
     fname: {
         type:String,
         required: true
@@ -10,17 +15,13 @@ const Author= new mongoose.Schema({
     lname: {
         type: String,
         required: true
-    },
-    title:  {                                       //{mandatory, enum[Mr, Mrs, Miss]},
-        type:String,
-        enum: ["Mr", "Mrs", "Miss"],
-        required:true
     },                                        
-    email:{
-        type: mongoose.SchemaTypes.Email, 
+    email:  {
+        type: String, 
         required: true,
-        unique: true
-    },                                       
+        unique:true
+    },
+                                           
     password:{
         type: Number,
         required: true
