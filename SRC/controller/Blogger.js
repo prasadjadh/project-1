@@ -19,4 +19,4 @@ const BloggerCreate = async function (req, res) {
 
 }
 
-module.exports.BloggerCreate = BloggerCreatefecth
+module.exports.BloggerCreate = BloggerCreate
