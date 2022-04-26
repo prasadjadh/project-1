@@ -11,7 +11,7 @@ const BloggerCreate = async function (req, res) {
    
     let Author_id = await AuthorModel.findOne({ _id: body.authorId })
     if (!Author_id) {
-        res.status(404).send(" No author found")
+        return res.status(404).send(" No author found")
     }
     
     let createBlogg = await BloggerModel.create(body)
@@ -19,21 +19,35 @@ const BloggerCreate = async function (req, res) {
     if(body.isPublished === true){
     let Update= await BloggerModel.updateMany({isPublished: true},{$set:{publishedAt: dateandTime}},{new:true})
     let FindData= await BloggerModel.find({isPublished: true})
-    res.status(200).send(FindData)
+   return res.status(200).send(FindData)
     }
     else{
-        res.status(201).send(createBlogg)
+       return res.status(201).send(createBlogg)
     }
 }
 
-const UpdateData= async function(req,res){
+const GetData= async function(req,res){
 
-    let body= req.body
+    let query=req.query
 
-    let UpdateRecord= await BloggerModel.updateMany
+    console.log("query:   ",query)
+    //authorId:query.authorId,category:query.category,tags:query.tags,subcategory:query.subcategory
 
+    // let array = query
 
+    // for(let i=0; i<)
+
+     let GetRecord= await BloggerModel.find({$and:[{isDeleted: false},{isPublished: true},query]})
+
+    console.log("record:  ",GetRecord);
+
+    res.send({msg: GetRecord })
+
+    //{$or:[{authorId:query.authorId},{category:query.category},{tags:query.tags},{subcategory:query.subcategory}]
+    //,category:[query.category],tags:[query.tags],subcategory:[query.subcategory]
+
+        //{isDeleted: false, isPublished: true}
 }
 
 module.exports.BloggerCreate = BloggerCreate
-module.exports.UpdateData=UpdateData
+module.exports.GetData=GetData
