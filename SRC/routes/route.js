@@ -3,8 +3,6 @@ const router = express.Router();
 const AuthorController=require("../controller/AuthorController")
 
 
-
-
 router.post("/AuthorCreate",AuthorController.AuthorCreate)
 
 
