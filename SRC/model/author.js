@@ -1,7 +1,10 @@
 const mongoose=require("mongoose")
 
 const Author= new mongoose.Schema({
-    fname: { mandatory}, 
+    fname: {
+        type:String,
+        required: true
+    }, 
     lname: {
         type: String,
         required: true
