@@ -7,7 +7,7 @@ const AuthorCreate= async function(req,res){
 
     console.log("everything is Okay:  ",body)
 
-    let author= await AuthorModel.create(body)
+    let author= await AuthorModel.create(body);
     
     res.send(author);
 }

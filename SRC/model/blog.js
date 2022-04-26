@@ -12,14 +12,14 @@ const BlogSchema= new mongoose.Schema({
     }, 
     authorId: {
         type: ObjectId,
-        ref: "author",
+        ref: 'author',
         required: true
     }, 
     tags: [String], 
     category: {type: [String],
         required: true,
         }, 
-    subcategory: [String],            //array of string, examples[technology-[web development, mobile development, AI, ML etc]] }, 
+    subcategory: [String],
     isDeleted: {
         type:Boolean, 
         default: false}, 
