@@ -19,7 +19,7 @@ const Author= new mongoose.Schema({
     },                                        
     email:  {
         type: mongoose.SchemaTypes.Email,
-        required: [true, "Email required"],
+        required: true,
         unique: true,
     },
                                            
