@@ -8,6 +8,6 @@ router.post("/AuthorCreate",AuthorController.AuthorCreate)
 
 router.post("/BloggerCreate",BloggerController.BloggerCreate)
 
-
+router.get("/UpdateData",BloggerController.UpdateData)
 
 module.exports = router;
