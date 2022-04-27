@@ -1,6 +1,6 @@
 const mongoose=require("mongoose");
 const router = require("../routes/route");
-require('mongoose-type-email')
+const Email= require('mongoose-type-email')
 
 
 const Author= new mongoose.Schema({
@@ -19,7 +19,7 @@ const Author= new mongoose.Schema({
         required:true
     },                                        
     email:  {
-        type: mongoose.SchemaTypes.Email,
+        type: Email,
         required: true,
         unique: true,
     },

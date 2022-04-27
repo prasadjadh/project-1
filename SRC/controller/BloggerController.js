@@ -6,20 +6,24 @@ const moment = require("moment")
 const BloggerCreate = async function (req, res) {
     let body = req.body
 
-    console.log("body:    ", body)
+   // console.log("body:    ", body)
 
     let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
 
-    let Author_id = await AuthorModel.findOne({ _id: body.authorId })
+    let Author_id = await AuthorModel.findById(body.authorId)
+
     if (!Author_id) {
         return res.status(404).send(" No author found")
     }
 
     let createBlogg = await BloggerModel.create(body)
 
+    console.log("create blog:  ",createBlogg)
+
     if (body.isPublished === true) {
         let Update = await BloggerModel.updateMany({ isPublished: true }, { $set: { publishedAt: dateandTime } }, { new: true })
-        let FindData = await BloggerModel.find({ isPublished: true })
+        let FindData = await BloggerModel.find({authorId: body.authorId})
+        console.log("findData: ",FindData)
         return res.status(200).send(FindData)
     }
     else {
@@ -35,9 +39,10 @@ const GetData = async function (req, res) {
 
     //authorId:query.authorId,category:query.category,tags:query.tags,subcategory:query.subcategory
 
-    let GetRecord = await BloggerModel.find({ $and: [{ isDeleted: false, isPublished: true }, query] })
+    let GetRecord = await BloggerModel.find({ $and: [{ isDeleted: false, isPublished: true },query] })
 
     console.log("record:  ", GetRecord.length);
+
 
     if (GetRecord.length > 0) {
         return res.send({ msg: GetRecord })
@@ -55,7 +60,7 @@ const UpdateData = async function (req, res) {
     let params = req.params
     let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
 
-    let DataUpdate = await BloggerModel.findOne({ _id: params.blogId })
+    let DataUpdate = await BloggerModel.findById(params.blogId)
     console.log("dataUpate:  ", DataUpdate)
 
     if (!DataUpdate) {
@@ -69,7 +74,7 @@ const UpdateData = async function (req, res) {
     // let setData= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$set:{title:body.title,body:body.body,publishedAt:dateandTime,isPublished:true}})
     // let Pushdata= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$push:{tags:body.tags,subcategory:body.subcategory}},{new:true,upsert:true})
 
-    let UpData = await BloggerModel.findOneAndUpdate({ _id: params.blogId }, { title: body.title, body: body.body, isPublished: true, publishedAt: dateandTime, $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
+    let UpData = await BloggerModel.findByIdAndUpdate(params.blogId, { title: body.title, body: body.body, isPublished: true, publishedAt: dateandTime, $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
 
     console.log("FinalUpdate:  ", UpData)
 
@@ -84,7 +89,7 @@ const delData = async function (req, res) {
     let verification = await BloggerModel.findById(id)
     console.log("verification:  ", verification)
     if (!verification) {
-        return res.status(404).send({ msg: "Successfully Deleted" })
+        return res.status(404).send({ msg: "No blog id exists" })
     }
 
     if (verification.isDeleted === true) {
@@ -96,8 +101,23 @@ const delData = async function (req, res) {
     }
 }
 
+const DataDelete= async function(req,res){
+    let query= req.query
+
+    console.log("query:    ",query)
+
+
+
+
+    //### DELETE /blogs?queryParams
+// - Delete blog documents by category, authorid, tag name, subcategory name, unpublished
+// - If the blog document doesn't exist then return an HTTP status of 404 with a body like [this](#error-response-structure)
+}
+
+
 
 module.exports.BloggerCreate = BloggerCreate
 module.exports.GetData = GetData
 module.exports.UpdateData = UpdateData
 module.exports.delData = delData
+module.exports.DataDelet=DataDelete
