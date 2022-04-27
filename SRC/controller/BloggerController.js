@@ -101,23 +101,28 @@ const delData = async function (req, res) {
     }
 }
 
-const DataDelete= async function(req,res){
+const deleted= async function(req,res){
+
     let query= req.query
+    console.log("query    ",   query)
 
-    console.log("query:    ",query)
+   
+    let convertBoolean= JSON.parse(query.isPublished);
 
+    let  delDeatails= await BloggerModel.findOneAndUpdate({$and:[{categeory:query.categeory},{authorId:query.authorId},{tags:query.tags},{subcategory:query.subcategory},{isPublished:convertBoolean}]},{isDeleted:true},{new:true})
 
+    console.log("delData   :" ,   delDeatails);
 
+    if(!delDeatails){
+        return res.send({msg:" Data doesn't exist"})
+    }
+    res.send({msg: delDeatails})
 
-    //### DELETE /blogs?queryParams
-// - Delete blog documents by category, authorid, tag name, subcategory name, unpublished
-// - If the blog document doesn't exist then return an HTTP status of 404 with a body like [this](#error-response-structure)
 }
-
 
 
 module.exports.BloggerCreate = BloggerCreate
 module.exports.GetData = GetData
 module.exports.UpdateData = UpdateData
 module.exports.delData = delData
-module.exports.DataDelet=DataDelete
+module.exports.DataDelet=deleted
