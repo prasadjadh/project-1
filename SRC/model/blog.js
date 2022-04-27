@@ -35,3 +35,4 @@ const BlogSchema = new mongoose.Schema({
 
 
 module.exports = mongoose.model("blogger", BlogSchema)
+

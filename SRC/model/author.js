@@ -1,4 +1,5 @@
-const mongoose=require("mongoose")
+const mongoose=require("mongoose");
+const router = require("../routes/route");
 require('mongoose-type-email')
 
 
@@ -30,3 +31,5 @@ const Author= new mongoose.Schema({
 },{timestamps:true});
 
 module.exports=mongoose.model("author",Author)
+
+
