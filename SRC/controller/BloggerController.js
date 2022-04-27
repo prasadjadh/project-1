@@ -2,6 +2,7 @@ const BloggerModel = require("../model/blog")
 const AuthorModel = require("../model/author")
 const moment=require("moment")
 const { param } = require("../routes/route")
+const { $where } = require("../model/blog")
 
 const BloggerCreate = async function (req, res) {
     let body = req.body
@@ -51,6 +52,8 @@ const GetData= async function(req,res){
 const UpdateData= async function(req,res){
     let body=req.body
 
+    let taggs=body
+
     let params =req.params
     let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
 
@@ -65,10 +68,12 @@ const UpdateData= async function(req,res){
         return res.status(403).send({msg: "error, isDeleted : true ", Status: "false"})
     }
 
+    let setData= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$set:{title:body.title,body:body.body,publishedAt:dateandTime,isPublished:true}})
+    let Pushdata= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$push:{tags:body.tags,subcategory:body.subcategory}},{new:true,upsert:true})
 
-    let FinalUpdate= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$set:{title:body.title,body:body.body,tags:body.tags,subcategory:body.subcategory,publishedAt:dateandTime,isPublished:true}},{new:true,upsert:true})
+    console.log("FinalUpdate:  ",Pushdata)
 
-    return res.status(201).send(FinalUpdate)
+    return res.status(201).send(Pushdata)
     
 }
 
@@ -90,7 +95,6 @@ const delData= async function(req,res){
         return res.status(200).send(" isDeleted: true ")
     }
 }
-
 
 
 module.exports.BloggerCreate = BloggerCreate
