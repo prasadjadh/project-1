@@ -20,8 +20,8 @@ const BloggerCreate = async function (req, res) {
 
     console.log("create blog:  ",createBlogg)
 
-    if (body.isPublished === true) {
-        let Update = await BloggerModel.updateMany({ isPublished: true }, { $set: { publishedAt: dateandTime } }, { new: true })
+    if (body.isPublished === true && body.isDeleted===true) {
+        let Update = await BloggerModel.updateMany({ isPublished: true }, { $set: { publishedAt: dateandTime, deletedAt:dateandTime } }, { new: true })
         let FindData = await BloggerModel.find({authorId: body.authorId})
         console.log("findData: ",FindData)
         return res.status(200).send(FindData)
@@ -86,6 +86,8 @@ const delData = async function (req, res) {
     let id = req.params.blogId
     console.log("id:    ", id)
 
+    let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
+
     let verification = await BloggerModel.findById(id)
     console.log("verification:  ", verification)
     if (!verification) {
@@ -96,7 +98,7 @@ const delData = async function (req, res) {
         return res.status(404).send(" deleted")
     }
     else {
-        let FinalResult = await BloggerModel.findOneAndUpdate({ _id: id }, { isDeleted: true }, { new: true })
+        let FinalResult = await BloggerModel.findByIdAndUpdate( id , { isDeleted: true,  deletedAt: dateandTime }, { new: true })
         return res.status(200).send(" isDeleted: true ")
     }
 }
@@ -109,7 +111,7 @@ const deleted= async function(req,res){
    
     let convertBoolean= JSON.parse(query.isPublished);
 
-    let  delDeatails= await BloggerModel.findOneAndUpdate({$and:[{categeory:query.categeory},{authorId:query.authorId},{tags:query.tags},{subcategory:query.subcategory},{isPublished:convertBoolean}]},{isDeleted:true},{new:true})
+    let  delDeatails= await BloggerModel.findOneAndUpdate({$and:[{categeory:query.categeory},{authorId:query.authorId},{tags:query.tags},{subcategory:query.subcategory},{isPublished:convertBoolean}]},{isDeleted:true,deletedAt:dateandTime},{new:true})
 
     console.log("delData   :" ,   delDeatails);
 
