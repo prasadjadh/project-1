@@ -10,12 +10,6 @@ const BloggerCreate = async function (req, res) {
         let body = req.body
         let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
 
-        let Author_id = await AuthorModel.findById(body.authorId)
-
-        if (!Author_id) {
-            return res.status(404).send(" No author found")
-        }
-
         let createBlogg = await BloggerModel.create(body)
 
 
@@ -39,8 +33,11 @@ const BloggerCreate = async function (req, res) {
 const GetData = async function (req, res) {
     try {
         let query = req.query
-      //  console.log("query: ",query)
+
+    //    console.log("query: ",query.category)
+
         let GetRecord = await BloggerModel.find({$and: [{ isDeleted: false}, {isPublished: true}, query ]})
+        
         if (GetRecord.length>0) {
             return res.status(200).send({ msg: GetRecord })
         }

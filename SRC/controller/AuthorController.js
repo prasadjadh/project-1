@@ -8,10 +8,12 @@ const AuthorCreate = async function (req, res) {
         let body = req.body
         let author = await AuthorModel.create(body);
         return res.status(201).send({ author });
+
     }
     catch (err) {
         return res.status(403).send({ msg: "Error", error: err.message })
     }
+    
 }
 
 
