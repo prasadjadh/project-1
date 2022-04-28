@@ -1,5 +1,4 @@
 const mongoose=require("mongoose");
-const router = require("../routes/route");
 const Email= require('mongoose-type-email')
 
 
