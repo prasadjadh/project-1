@@ -72,13 +72,16 @@ const UpdateData = async function (req, res) {
             return res.status(403).send({ msg: "error, isDeleted : true ", Status: "false" })
         }
 
-        let UpData = await BloggerModel.findByIdAndUpdate(params.blogId, { title: body.title, body: body.body, isPublished: true, publishedAt: dateandTime, $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
+        let UpData = await BloggerModel.findByIdAndUpdate({_id: params.blogId}, { title: body.title, body: body.body, isPublished: true, publishedAt: dateandTime, $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
+        if(!UpData){
+            return res.status(404).send({msg: "No Data Found", Status: false})
+        }
 
         // Also we can use this one from line number 68 to 69
         // let setData= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$set:{title:body.title,body:body.body,publishedAt:dateandTime,isPublished:true}})
         // let Pushdata= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$push:{tags:body.tags,subcategory:body.subcategory}},{new:true,upsert:true})
 
-        return res.status(201).send(UpData)
+        return res.status(201).send({msg: UpData})
     }
     catch (err) {
         return res.status(403).send({ msg: "Error", error: err.message })
@@ -118,6 +121,8 @@ const delData = async function (req, res) {
 const deleted = async function (req, res) {
     try {
         let query = req.query
+
+        let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
 
         let convertBoolean = JSON.parse(query.isPublished);
 
