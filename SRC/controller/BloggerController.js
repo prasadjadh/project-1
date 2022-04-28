@@ -18,7 +18,7 @@ const BloggerCreate = async function (req, res) {
 
         let createBlogg = await BloggerModel.create(body)
 
-       
+
         if (body.isPublished === true) {
             let Update = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { publishedAt: dateandTime } }, { new: true })
 
@@ -30,21 +30,26 @@ const BloggerCreate = async function (req, res) {
         return res.status(200).send({ msg: Finaldata })
     }
     catch (err) {
-        return res.status(403).send({ msg: "Error", Status: false })
+        return res.status(403).send({ msg: "Error", error: err.message })
     }
 }
 
 // Problem 3rd
 
 const GetData = async function (req, res) {
-
-    let query = req.query
-    let GetRecord = await BloggerModel.find({ $and: [{ isDeleted: false, isPublished: true }, query] })
-    if (GetRecord.length > 0) {
-        return res.status(200).send({ msg: GetRecord })
+    try {
+        let query = req.query
+      //  console.log("query: ",query)
+        let GetRecord = await BloggerModel.find({$and: [{ isDeleted: false}, {isPublished: true}, query ]})
+        if (GetRecord.length>0) {
+            return res.status(200).send({ msg: GetRecord })
+        }
+        else {
+            return res.status(404).send("no data found")
+        }
     }
-    else {
-        return res.status(404).send("no data found")
+    catch (err) {
+        return res.status(403).send({ msg: "Error", error: err.message })
     }
 }
 
@@ -76,7 +81,7 @@ const UpdateData = async function (req, res) {
         return res.status(201).send(UpData)
     }
     catch (err) {
-        return res.status(404).send({ msg: " Not Found" })
+        return res.status(403).send({ msg: "Error", error: err.message })
     }
 
 }
@@ -86,11 +91,11 @@ const UpdateData = async function (req, res) {
 const delData = async function (req, res) {
     try {
         let id = req.params.blogId
-       
+
         let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
 
         let verification = await BloggerModel.findById(id)
-       
+
         if (!verification) {
             return res.status(404).send({ msg: "No blog id exists" })
         }
@@ -104,7 +109,7 @@ const delData = async function (req, res) {
         }
     }
     catch (err) {
-        return res.status(404).send({ msg: "Not Found" })
+        return res.status(403).send({ msg: "Error", error: err.message })
     }
 }
 
@@ -125,7 +130,7 @@ const deleted = async function (req, res) {
         res.status(200).send({ msg: delDeatails })
     }
     catch (err) {
-        return res.status(404).send({ msg: "Not Found " })
+        return res.status(403).send({ msg: "Error", error: err.message })
     }
 
 }
