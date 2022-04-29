@@ -65,12 +65,16 @@ const MiddlewareMid1 = async function (req, res, next) {
 }
 
 const MiddlewareMid2= async function(req,res,next){
-    
+
     let header = req.headers
     let token = header['x-api-key'] || header["X-API-KEY"]
 
 
-    let bloggerVerification =await BloggerModel.findById(req.params.blogId).select({authorId:true,_id:false})
+    let bloggerVerification =await BloggerModel.findById(req.params.blogId)
+
+    if(!bloggerVerification){
+        return res.status(404).send({msg: "Error: Blog id does not exist"})
+    }
 
     console.log("bloggerVerification",bloggerVerification)
 
