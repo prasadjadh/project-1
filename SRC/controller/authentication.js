@@ -1,6 +1,7 @@
 const AuthorModel = require('../model/author')
 const BloggerModel = require('../model/blog')
 const jwt = require('jsonwebtoken')
+const { query } = require('express')
 
 
 // Phase 2nd Problem 1
@@ -28,47 +29,72 @@ const login = async function (req, res) {
 // Phase 2 Problem 2
 
 const MiddlewareMid1 = async function (req, res, next) {
+
     let body = req.body
-    let paraId = req.params.blogId
+
+    let header = req.headers
+    let query = req.query.authorId
+
+    console.log("Query:   ", query);
+       
+    let token = header['x-api-key'] || header["X-API-KEY"]
+
+    console.log("token:  ", token)
+
+    let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }, { _id: query }] }).select({ _id: 1 });
+   
+    console.log("authordetails:   ", AuthorDetail)
+   
+    if (!AuthorDetail) {
+        return res.status(404).send("Creadential are not matching")
+    }
+
+
+    let DecodeToken = jwt.verify(token, "Functionup-Team52")
+    console.log("Decoded Token:   ", DecodeToken)
+   
+    if (DecodeToken.author_id != AuthorDetail._id) {
+        console.log("under mismatch token")
+        return res.status(404).send("Token Error: could not validate the authorization ")
+    }
+    
+    console.log("passsing the middleware")
+   return next()
+
+
+}
+
+const MiddlewareMid2= async function(req,res,next){
+    
     let header = req.headers
     let token = header['x-api-key'] || header["X-API-KEY"]
 
 
-    let ParamBlogiD = await BloggerModel.findById({ _id: paraId }).select({ authorId: 1, _id: 0 })
+    let bloggerVerification =await BloggerModel.findById(req.params.blogId).select({authorId:true,_id:false})
 
-    console.log("kkkk:    ",ParamBlogiD);
+    console.log("bloggerVerification",bloggerVerification)
 
-    if (!ParamBlogiD) {
-        return res.send("Blogger is incorrect ");
-    }
+    let AuthorDetail = await AuthorModel.findById(bloggerVerification.authorId ).select({ _id: 1 });
+   
+    console.log("authordetails:   ", AuthorDetail)
 
-
-    let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }, { _id: req.query.authorId }, { _id: ParamBlogiD.authorId }] }).select({ _id: 1 });
-
-
-
+   
+   
     if (!AuthorDetail) {
-        return res.status(404).send("Creadential are not matching");
+        return res.status(404).send("Creadential are not matching")
     }
 
 
-    try {
-        let DecodeToken = jwt.verify(token, "Functionup-Team52")
-
-
-
-        if (DecodeToken.author_id != AuthorDetail._id) {
-            return res.status(404).send("Token Error: could not validate the authorization ")
-        }
-
-        next()
+    let DecodeToken = jwt.verify(token, "Functionup-Team52")
+    console.log("Decoded Token:   ", DecodeToken)
+   
+    if (DecodeToken.author_id != AuthorDetail._id) {
+        console.log("under mismatch token")
+        return res.status(404).send("Token Error: could not validate the authorization ")
     }
-    catch (err) {
-
-        return res.status(404).send({ msg: "error", error: err.message })
-    }
-
-
+    
+    console.log("passsing the middleware")
+   return next()
 }
 
 
@@ -76,3 +102,4 @@ const MiddlewareMid1 = async function (req, res, next) {
 // module.exports.mid1= mid1
 module.exports.login = login
 module.exports.MiddlewareMid1 = MiddlewareMid1
+module.exports.MiddlewareMid2=MiddlewareMid2

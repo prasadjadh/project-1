@@ -61,9 +61,9 @@ const UpdateData = async function (req, res) {
 
         let DataUpdate = await BloggerModel.findById(params.blogId)
 
-        if (!DataUpdate) {
-            return res.status(404).send({ msg: "No id found" })
-        }
+        // if (!DataUpdate) {
+        //     return res.status(404).send({ msg: "No id found" })
+        // }
 
         if (DataUpdate.isDeleted === true) {
             return res.status(403).send({ msg: "error, isDeleted : true ", Status: "false" })
@@ -120,9 +120,10 @@ const deleted = async function (req, res) {
         let query = req.query
 
         let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
-
+        console.log("under the handler",query)
+       
         let convertBoolean = JSON.parse(query.isPublished);
-
+        
         let delDeatails = await BloggerModel.findOneAndUpdate({ $and: [{ categeory: query.categeory }, { authorId: query.authorId }, { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: convertBoolean }] }, { isDeleted: true, deletedAt: dateandTime }, { new: true })
 
 
