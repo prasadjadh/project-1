@@ -10,8 +10,12 @@ const BloggerCreate = async function (req, res) {
         let body = req.body
         let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
 
-        let createBlogg = await BloggerModel.create(body)
+        console.log("Body:  ",body.category)
+        if(!body.category){
+            return res.status(404).send("Category is missing")
+        }
 
+        let createBlogg = await BloggerModel.create(body)
 
         if (body.isPublished === true) {
             let Update = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { publishedAt: dateandTime } }, { new: true })

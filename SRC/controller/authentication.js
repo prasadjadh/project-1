@@ -29,7 +29,7 @@ const login = async function (req, res) {
 // Phase 2 Problem 2
 
 const MiddlewareMid1 = async function (req, res, next) {
-
+try{
     let body = req.body
 
     let header = req.headers
@@ -51,7 +51,7 @@ const MiddlewareMid1 = async function (req, res, next) {
 
 
     let DecodeToken = jwt.verify(token, "Functionup-Team52")
-    console.log("Decoded Token:   ", DecodeToken)
+ //   console.log("Decoded Token:   ", DecodeToken)
    
     if (DecodeToken.author_id != AuthorDetail._id) {
         console.log("under mismatch token")
@@ -60,6 +60,13 @@ const MiddlewareMid1 = async function (req, res, next) {
     
     console.log("passsing the middleware")
    return next()
+
+}
+catch (err) {
+    return res.status(403).send({ msg: "Error", error: err.message })
+}
+
+    
 
 
 }
