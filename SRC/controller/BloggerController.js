@@ -40,7 +40,7 @@ const GetData = async function (req, res) {
 
     //    console.log("query: ",query.category)
 
-        let GetRecord = await BloggerModel.find({$and: [{ isDeleted: false}, {isPublished: true}, query ]}).select("authorId")
+        let GetRecord = await BloggerModel.find({$and: [{ isDeleted: false}, {isPublished: true}, query ]}).populate("authorId")
         
         if (GetRecord.length>0) {
             return res.status(200).send({ msg: GetRecord })
