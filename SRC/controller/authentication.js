@@ -7,22 +7,29 @@ const { query } = require('express')
 // Phase 2nd Problem 1
 
 const login = async function (req, res) {
-    let body = req.body
+    try{
+        let body = req.body
 
-    let authorization = await AuthorModel.findOne({ email: body.email, password: body.password })
-    console.log("authorization:  ", authorization)
-    if (!authorization) {
-        return res.status(404).send({ msg: "Please enter correct Credentials" })
+        let authorization = await AuthorModel.findOne({ email: body.email, password: body.password })
+        console.log("authorization:  ", authorization)
+        if (!authorization) {
+            return res.status(404).send({ msg: "Please enter correct Credentials" })
+        }
+    
+        let token = jwt.sign({
+    
+            author_id: authorization._id,
+    
+        }, "Functionup-Team52")
+    
+        res.setHeader("x-api-key", token)
+        res.status(201).send(token)
+
+    }
+    catch (err) {
+        return res.status(403).send({ msg: "Error", error: err.message })
     }
 
-    let token = jwt.sign({
-
-        author_id: authorization._id,
-
-    }, "Functionup-Team52")
-
-    res.setHeader("x-api-key", token)
-    res.send(token)
 
 }
 
@@ -43,7 +50,7 @@ try{
 
     let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }, { _id: query }] }).select({ _id: 1 });
    
-    console.log("authordetails:   ", AuthorDetail)
+  //  console.log("authordetails:   ", AuthorDetail)
    
     if (!AuthorDetail) {
         return res.status(404).send("Creadential are not matching")
@@ -54,11 +61,11 @@ try{
  //   console.log("Decoded Token:   ", DecodeToken)
    
     if (DecodeToken.author_id != AuthorDetail._id) {
-        console.log("under mismatch token")
+       // console.log("under mismatch token")
         return res.status(404).send("Token Error: could not validate the authorization ")
     }
     
-    console.log("passsing the middleware")
+   // console.log("passsing the middleware")
    return next()
 
 }
