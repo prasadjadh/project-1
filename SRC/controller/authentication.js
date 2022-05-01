@@ -41,18 +41,22 @@ try{
 
     let header = req.headers
     let query = req.query.authorId
+
+    
+
+    
        
     let token = header['x-api-key'] || header["X-API-KEY"]
 
     let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }, { _id: query }] }).select({ _id: 1 });
    
-   
+  
     if (!AuthorDetail) {
         return res.status(404).send("Creadential are not matching")
     }
 
     let DecodeToken = jwt.verify(token, "Functionup-Team52")
-
+  
     if (DecodeToken.author_id != AuthorDetail._id) {
       
         return res.status(404).send("Token Error: could not validate the authorization ")

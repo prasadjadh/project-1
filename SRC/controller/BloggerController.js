@@ -9,16 +9,14 @@ const BloggerCreate = async function (req, res) {
     try {
         let body = req.body
 
-        let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
-
         let createBlogg = await BloggerModel.create(body)
 
         if (body.isPublished === true) {
-            let Update = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { publishedAt: dateandTime } }, { new: true })
+            let Update = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { publishedAt: new Date() } }, { new: true })
 
         }
         if (body.isDeleted === true) {
-            let CreateDeleteTime = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { deletedAt: dateandTime } }, { new: true })
+            let CreateDeleteTime = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { deletedAt: new Date() } }, { new: true })
         }
         let Finaldata = await BloggerModel.find(body)
         return res.status(200).send({ msg: Finaldata })
@@ -55,7 +53,6 @@ const UpdateData = async function (req, res) {
         let body = req.body
 
         let params = req.params
-        let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
 
         let DataUpdate = await BloggerModel.findById(params.blogId)
 
@@ -63,7 +60,7 @@ const UpdateData = async function (req, res) {
             return res.status(403).send({ msg: "error, isDeleted : true ", Status: "false" })
         }
 
-        let UpData = await BloggerModel.findByIdAndUpdate({ _id: params.blogId }, { title: body.title, body: body.body, isPublished: true, publishedAt: dateandTime, $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
+        let UpData = await BloggerModel.findByIdAndUpdate({ _id: params.blogId }, { title: body.title, body: body.body, isPublished: true, publishedAt: new Date(), $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
 
         if (!UpData) {
             return res.status(404).send({ msg: "No Data Found", Status: false })
@@ -86,8 +83,6 @@ const delData = async function (req, res) {
     try {
         let id = req.params.blogId
 
-        let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
-
         let verification = await BloggerModel.findById(id)
 
         if (!verification) {
@@ -98,7 +93,7 @@ const delData = async function (req, res) {
             return res.status(200).send(" deleted")
         }
         else {
-            let FinalResult = await BloggerModel.findByIdAndUpdate(id, { isDeleted: true, deletedAt: dateandTime }, { new: true })
+            let FinalResult = await BloggerModel.findByIdAndUpdate(id, { isDeleted: true, deletedAt: new Date() }, { new: true })
             return res.status(201).send({ msg: " isDeleted: true ", FinalResult })
         }
     }
@@ -113,11 +108,13 @@ const deleted = async function (req, res) {
     try {
         let query = req.query
 
-        let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
+        if(!query.isPublished){
+return res.status(404).send("Please enter the isPublished data")
+        }
 
         let convertBoolean = JSON.parse(query.isPublished);
 
-        let delDeatails = await BloggerModel.findOneAndUpdate({ $and: [{ categeory: query.categeory }, { authorId: query.authorId }, { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: convertBoolean }] }, { isDeleted: true, deletedAt: dateandTime }, { new: true })
+        let delDeatails = await BloggerModel.findOneAndUpdate({ $and: [{ categeory: query.categeory }, { authorId: query.authorId }, { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: convertBoolean }] }, { isDeleted: true, deletedAt: new Date() }, { new: true })
 
         if (!delDeatails) {
             return res.status(404).send({ msg: " Data doesn't exist" })
