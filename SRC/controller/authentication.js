@@ -42,11 +42,11 @@ try{
     let header = req.headers
     let query = req.query.authorId
 
-    console.log("Query:   ", query);
+    // console.log("Query:   ", query);
        
     let token = header['x-api-key'] || header["X-API-KEY"]
 
-    console.log("token:  ", token)
+    // console.log("token:  ", token)
 
     let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }, { _id: query }] }).select({ _id: 1 });
    

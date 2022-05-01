@@ -19,7 +19,7 @@ const BlogSchema = new mongoose.Schema({
     category: {
         type: [String],
         required: true,
-        validate: [(value) => value.length > 0, 'No outputs']
+        validate: [(value) => value.length > 0, 'Category is mandatory']
     },
     subcategory: [String],
     isDeleted: {
