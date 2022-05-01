@@ -104,7 +104,7 @@ const delData = async function (req, res) {
         }
         else {
             let FinalResult = await BloggerModel.findByIdAndUpdate(id, { isDeleted: true, deletedAt: dateandTime }, { new: true })
-            return res.status(201).send(" isDeleted: true ")
+            return res.status(201).send({msg:" isDeleted: true ",FinalResult})
         }
     }
     catch (err) {
