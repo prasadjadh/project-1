@@ -1,6 +1,6 @@
 const BloggerModel = require("../model/blog")
 const AuthorModel = require("../model/author")
-const moment = require("moment")
+
 
 // Problem 2
 
@@ -109,7 +109,7 @@ const deleted = async function (req, res) {
         let query = req.query
 
         if(!query.isPublished){
-return res.status(404).send("Please enter the isPublished data")
+            return res.status(404).send("Please enter the isPublished data")
         }
 
         let convertBoolean = JSON.parse(query.isPublished);
