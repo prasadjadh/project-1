@@ -14,7 +14,7 @@ router.put("/blogs/:blogId",Auth.MiddlewareMid2,BloggerController.UpdateData)
 
 router.delete("/blogs/:blogId",Auth.MiddlewareMid1,BloggerController.delData)
 
-router.delete("/blogs",Auth.MiddlewareMid1,BloggerController.DataDelet)
+router.delete("/blogs",Auth.MiddlewareMid2,BloggerController.DataDelet)
 
 router.post('/login', Auth.login)
 
