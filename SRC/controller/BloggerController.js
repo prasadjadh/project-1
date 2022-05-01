@@ -8,16 +8,8 @@ const BloggerCreate = async function (req, res) {
 
     try {
         let body = req.body
-        if(Object.keys(body).length === 0){
-            return res.status(401).send(" Please enter the data ")
-        }
+
         let dateandTime = moment().format("YYYY-MM-DD HH:mm:ss")
-
-        console.log("Body:  ",body.category)
-
-        if(!body.category){
-            return res.status(404).send("Category is missing")
-        }
 
         let createBlogg = await BloggerModel.create(body)
 
