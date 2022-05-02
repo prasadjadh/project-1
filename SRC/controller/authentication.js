@@ -13,7 +13,7 @@ const login = async function (req, res) {
         let authorization = await AuthorModel.findOne({ email: body.email, password: body.password })
 
         if (!authorization) {
-            return res.status(404).send({ msg: "Please enter correct Credentials" })
+            return res.status(401).send({ msg: "Please enter correct Credentials" })
         }
     
         let token = jwt.sign({
@@ -59,7 +59,7 @@ try{
   
     if (DecodeToken.author_id != AuthorDetail._id) {
       
-        return res.status(404).send("Token Error: could not validate the authorization ")
+        return res.status(401).send("Token Error: could not validate the authorization ")
     }
     
    return next()
@@ -92,7 +92,7 @@ const MiddlewareMid2= async function(req,res,next){
    
     if (DecodeToken.author_id != AuthorDetail._id) {
        
-        return res.status(404).send("Token Error: could not validate the authorization ")
+        return res.status(401).send("Token Error: could not validate the authorization ")
     }
     
    return next()
