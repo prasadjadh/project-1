@@ -8,7 +8,7 @@ router.post("/AuthorCreate",AuthorController.AuthorCreate)
 
 router.post("/BloggerCreate",Auth.MiddlewareMid1,BloggerController.BloggerCreate)
 
-router.get("/GetData",Auth.MiddlewareMid1,BloggerController.GetData)
+router.get("/GetData",Auth.MiddlewareMid2,BloggerController.GetData)
 
 router.put("/blogs/:blogId",Auth.MiddlewareMid1,BloggerController.UpdateData)
 

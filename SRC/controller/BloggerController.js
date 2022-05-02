@@ -38,7 +38,7 @@ const GetData = async function (req, res) {
             return res.status(200).send({ msg: GetRecord })
         }
         else {
-            return res.status(404).send("no data found")
+            return res.status(404).send("no data found");
         }
     }
     catch (err) {
