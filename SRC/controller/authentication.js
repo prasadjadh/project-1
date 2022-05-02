@@ -79,7 +79,7 @@ const MiddlewareMid2= async function(req,res,next){
     let bloggerVerification =await BloggerModel.findOne(req.query)
 
     if(!bloggerVerification){
-        return res.status(404).send({msg: "Error: Blog id does not exist"})
+        return res.status(404).send({msg: "Error: Blog does not exist"})
     }
 
     let AuthorDetail = await AuthorModel.findById(bloggerVerification.authorId ).select({ _id: 1 });
