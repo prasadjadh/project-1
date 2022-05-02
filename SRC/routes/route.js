@@ -10,11 +10,11 @@ router.post("/BloggerCreate",Auth.MiddlewareMid1,BloggerController.BloggerCreate
 
 router.get("/GetData",Auth.MiddlewareMid1,BloggerController.GetData)
 
-router.put("/blogs/:blogId",Auth.MiddlewareMid2,BloggerController.UpdateData)
+router.put("/blogs/:blogId",Auth.MiddlewareMid1,BloggerController.UpdateData)
 
-router.delete("/blogs/:blogId",Auth.MiddlewareMid2,BloggerController.delData)
+router.delete("/blogs/:blogId",Auth.MiddlewareMid1,BloggerController.delData)
 
-router.delete("/blogs",Auth.MiddlewareMid1,BloggerController.DataDelet)
+router.delete("/blogs",Auth.MiddlewareMid2,BloggerController.DataDelet)
 
 router.post('/login', Auth.login)
 

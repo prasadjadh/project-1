@@ -15,6 +15,8 @@ const BlogSchema = new mongoose.Schema({
         ref: 'author',
         required: true
     },
+    publishedAt: Date,
+    deletedAt: Date,
     tags: [String],
     category: {
         type: [String],
@@ -26,8 +28,7 @@ const BlogSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    publishedAt: Date,
-    deletedAt: Date,
+   
     isPublished: {
         type: Boolean,
         default: false
