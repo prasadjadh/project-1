@@ -42,19 +42,22 @@ try{
 
     let token = header['x-api-key'] || header["X-API-KEY"]
 
-    let bloggerVerification =await BloggerModel.findById(req.params.blogId)
+    let bloggerVerification =await BloggerModel.findOne(req.query)
+    console.log("bloggerVerification:  ",bloggerVerification)
 
     if(!bloggerVerification){
-        return res.status(404).send({msg: "Error: Blog id does not exist"})
+        return res.status(404).send({msg: "Error: Blog does not exist"})
     }
 
-    let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }, { _id: bloggerVerification.authorId }] }).select({ _id: 1 });
+
+
+    let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId },{_id: bloggerVerification.authorId}] }).select({ _id: 1 });
    
   
     if (!AuthorDetail) {
         return res.status(404).send("Creadential are not matching")
     }
-
+   
     let DecodeToken = jwt.verify(token, "Functionup-Team52")
   
     if (DecodeToken.author_id != AuthorDetail._id) {
@@ -76,12 +79,12 @@ const MiddlewareMid2= async function(req,res,next){
     let header = req.headers
     let token = header['x-api-key'] || header["X-API-KEY"]
 
-    let bloggerVerification =await BloggerModel.findOne(req.query)
-    console.log("bloggerVerification:  ",bloggerVerification)
+    let bloggerVerification =await BloggerModel.findById(req.params.blogId)
 
     if(!bloggerVerification){
-        return res.status(404).send({msg: "Error: Blog does not exist"})
+        return res.status(404).send({msg: "Error: Blog id does not exist"})
     }
+
 
     let AuthorDetail = await AuthorModel.findById(bloggerVerification.authorId ).select({ _id: 1 });
    
