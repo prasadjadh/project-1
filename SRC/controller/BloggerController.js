@@ -108,13 +108,14 @@ const deleted = async function (req, res) {
     try {
         let query = req.query
 
-        if(!query.isPublished){
-            return res.status(404).send("Please enter the isPublished data")
+
+        if(query.isPublished === "true"){
+            return res.status(404).send("Sorry you are not allowed to delete this blog ")
         }
 
-        let convertBoolean = JSON.parse(query.isPublished);
+        
 
-        let delDeatails = await BloggerModel.findOneAndUpdate({ $and: [{ categeory: query.categeory }, { authorId: query.authorId }, { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: convertBoolean }] }, { isDeleted: true, deletedAt: new Date() }, { new: true })
+        let delDeatails = await BloggerModel.findOneAndUpdate({ $and: [{ categeory: query.categeory }, { authorId: query.authorId }, { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: query.isPublished }] }, { isDeleted: true, deletedAt: new Date() }, { new: true })
 
         if (!delDeatails) {
             return res.status(404).send({ msg: " Data doesn't exist" })
