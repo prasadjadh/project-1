@@ -8,7 +8,7 @@ const BloggerCreate = async function (req, res) {
 
     try {
         let body = req.body
-        console.log("body yha hai:   ",body)
+      
         if(!body.title){
             return res.status(404).send({msg: "Error", Status: " Please enter the title"})
         }
@@ -20,8 +20,7 @@ const BloggerCreate = async function (req, res) {
         }
 
         let createBlogg = await BloggerModel.create(body)
-       // console.log("mai yha hu:    ",createBlogg)
-
+      
         if (body.isPublished === true) {
             let Update = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { publishedAt: new Date() } }, { new: true })
 
@@ -118,6 +117,22 @@ const delData = async function (req, res) {
 const deleted = async function (req, res) {
     try {
         let query = req.query
+// Validation Part 
+        if(!query.authorId){
+            return res.status(404).send({Status: false, msg:"You have not entered the Author id in query params"})
+        }
+        if(!query.category){
+            return res.status(404).send({Status: false, msg:"You have not entered the category in query params"})
+        }
+        if(!query.subcategory){
+            return res.status(404).send({Status: false, msg:"You have not entered the subcategory in query params"})
+        }
+        if(!query.isPublished){
+            return res.status(404).send({Status: false, msg:"You have not entered the isPublished data in query params"})
+        }
+        if(!query.tags){
+            return res.status(404).send({Status: false, msg:"You have not entered the tags in query params"})
+        }
 
         if(query.isPublished === "true"){
             return res.status(404).send({Status: false, msg: "Sorry you are not allowed to delete this blog "})
