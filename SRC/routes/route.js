@@ -16,6 +16,6 @@ router.delete("/blogs/:blogId",Auth.MiddlewareMid2,BloggerController.delData)
 
 router.delete("/blogs",Auth.MiddlewareMid3,BloggerController.DataDelet)
 
-router.post('/login', Auth.login)
+router.post('/login', Auth.login);
 
 module.exports = router;

@@ -8,18 +8,19 @@ const BloggerCreate = async function (req, res) {
 
     try {
         let body = req.body
-
+        console.log("body yha hai:   ",body)
         if(!body.title){
             return res.status(404).send({msg: "Error", Status: " Please enter the title"})
         }
         if(!body.body){
             return res.status(404).send({msg: "Error", Status: " Please enter the body"})
         }
-        if(!body.categeory){
+        if(!body.category){
             return res.status(404).send({msg: "Error", Status: " Please enter the category"})
         }
 
         let createBlogg = await BloggerModel.create(body)
+        console.log("mai yha hu:    ",createBlogg)
 
         if (body.isPublished === true) {
             let Update = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { publishedAt: new Date() } }, { new: true })
@@ -46,10 +47,10 @@ const GetData = async function (req, res) {
         let GetRecord = await BloggerModel.find({ $and: [{ isDeleted: false }, { isPublished: true }, query] }).populate("authorId")
 
         if (GetRecord.length > 0) {
-            return res.status(200).send({ msg: GetRecord })
+            return res.status(200).send({Status: true , msg: GetRecord })
         }
         else {
-            return res.status(404).send("no data found");
+            return res.status(404).send({Status: false, msg:"No such blog exist"});
         }
     }
     catch (err) {
@@ -68,20 +69,23 @@ const UpdateData = async function (req, res) {
         let DataUpdate = await BloggerModel.findById(params.blogId)
 
         if (DataUpdate.isDeleted === true) {
-            return res.status(403).send({ msg: "Error ", Status: "This is already deleted blog" })
+            return res.status(403).send({ Status: false , msg: "We cant Published a deleted blog" })
+        }
+        if(DataUpdate.isPublished === true){
+            return res.status(403).send({Status: false, msg: "this is already Published"})
         }
 
         let UpData = await BloggerModel.findByIdAndUpdate({ _id: params.blogId }, { title: body.title, body: body.body, isPublished: true, publishedAt: new Date(), $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
 
         if (!UpData) {
-            return res.status(404).send({ msg: "Error", Status: "No blog found" })
+            return res.status(404).send({ Status: false , msg: "No blog found" })
         }
 
         // Also we can use this one from line number 68 to 69
         // let setData= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$set:{title:body.title,body:body.body,publishedAt:dateandTime,isPublished:true}})
         // let Pushdata= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$push:{tags:body.tags,subcategory:body.subcategory}},{new:true,upsert:true})
 
-        return res.status(201).send({ msg: UpData })
+        return res.status(201).send({Status: true,  msg: UpData })
     }
     catch (err) {
         return res.status(403).send({ msg: "Error", error: err.message })
@@ -96,16 +100,12 @@ const delData = async function (req, res) {
 
         let verification = await BloggerModel.findById(id)
 
-        if (!verification) {
-            return res.status(404).send({ msg: "No blog id exists" })
-        }
-
         if (verification.isDeleted === true) {
-            return res.status(200).send(" deleted")
+            return res.status(200).send({Status: false, msg: " already deleted"})
         }
         else {
             let FinalResult = await BloggerModel.findByIdAndUpdate(id, { isDeleted: true, deletedAt: new Date() }, { new: true })
-            return res.status(201).send({ msg: " isDeleted: true ", FinalResult })
+            return res.status(201).send({ Status: true, msg: " Successfully deleted the blog ", FinalResult })
         }
     }
     catch (err) {
@@ -121,17 +121,15 @@ const deleted = async function (req, res) {
 
 
         if(query.isPublished === "true"){
-            return res.status(404).send("Sorry you are not allowed to delete this blog ")
+            return res.status(404).send({Status: false, msg: "Sorry you are not allowed to delete this blog "})
         }
-
-        
 
         let delDeatails = await BloggerModel.findOneAndUpdate({ $and: [{ categeory: query.categeory }, { authorId: query.authorId }, { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: query.isPublished }] }, { isDeleted: true, deletedAt: new Date() }, { new: true })
 
         if (!delDeatails) {
-            return res.status(404).send({ msg: " Data doesn't exist" })
+            return res.status(404).send({ Status: false, msg: " Data doesn't exist" })
         }
-        res.status(200).send({ msg: delDeatails })
+        res.status(200).send({ Status: true,  msg: delDeatails })
     }
     catch (err) {
         return res.status(403).send({ msg: "Error", error: err.message })

@@ -13,7 +13,7 @@ const login = async function (req, res) {
         let authorization = await AuthorModel.findOne({ email: body.email, password: body.password })
 
         if (!authorization) {
-            return res.status(401).send({ msg: "Please enter correct Credentials" })
+            return res.status(401).send({Satus: false , msg: "Please enter correct Credentials" })
         }
     
         let token = jwt.sign({
@@ -23,7 +23,7 @@ const login = async function (req, res) {
         }, "Functionup-Team52")
     
         res.setHeader("x-api-key", token)    /// i have to ask this one
-        res.status(201).send(token)
+        res.status(201).send({Status: true, msg: token})
 
     }
     catch (err) {
@@ -43,26 +43,31 @@ try{
     let token = header['x-api-key'] || header["X-API-KEY"]
 
     if(!token){
-        return res.status(404).send("Token is not present")
+        return res.status(404).send({Status: false, msg: "Token is not present"})
     }
     if(!body.authorId){
-        return res.status(404).send({msg: "Error", Satus: "Auhtor Id must be present"})
+        return res.status(404).send({ Satus: false, msg: "Auhtor Id must be present" })
     }
 
     let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }] }).select({ _id: 1 });
    
   
     if (!AuthorDetail) {
-        return res.status(404).send({msg: "Error", Satus: "Author Id is not valid"})
+        return res.status(404).send({ Satus: false ,msg: "Author Id is not valid" })
     }
    
-    let DecodeToken = jwt.verify(token, "Functionup-Team52")
-  
-    if (DecodeToken.author_id != AuthorDetail._id) {
+    try{
+        let DecodeToken = jwt.verify(token, "Functionup-Team52")
+
+        if (DecodeToken.author_id != AuthorDetail._id) {
       
-        return res.status(401).send("Token Error: could not validate the authorization ")
+            return res.status(401).send({Status: false, msg:"this token is not valid for this author id"})
+        }
     }
-    
+    catch(err){
+        return res.status(404).send({Status: false, error: err.message,  msg: "you have entered a wrong token"})
+    }
+  
    return next()
 
     }
@@ -71,68 +76,99 @@ try{
     }
 
 }
+//=======================================================================================================================//
 
 const MiddlewareMid2= async function(req,res,next){
 
     let header = req.headers
-
+    
     let token = header['x-api-key'] || header["X-API-KEY"]
 
     if(!token){
-        return res.status(404).send("Token is not present")
+        return res.status(404).send({Status: false, msg:"Token is not present"})
     }
+
 
     let bloggerVerification =await BloggerModel.findById(req.params.blogId)
 
     if(!bloggerVerification){
-        return res.status(404).send({msg: "Error: Blog id does not exist"})
+        return res.status(404).send({Status: false, msg: "Error: Blog id does not exist"})
     }
-
-
+    
     let AuthorDetail = await AuthorModel.findById(bloggerVerification.authorId ).select({ _id: 1 });
    
     if (!AuthorDetail) {
-        return res.status(404).send("Creadential are not matching")
+        return res.status(404).send({Status: false, msg: "Creadential are not matching"})
     }
 
-    let DecodeToken = jwt.verify(token, "Functionup-Team52")
-   
-    if (DecodeToken.author_id != AuthorDetail._id) {
-       
-        return res.status(401).send("Token Error: could not validate the authorization ")
+    try{
+        let DecodeToken = jwt.verify(token, "Functionup-Team52")
+
+        if (DecodeToken.author_id != AuthorDetail._id) {
+      
+            return res.status(401).send({Status: false, msg:"this token is not valid for this author id"})
+        }
+    }
+    catch(err){
+        return res.status(404).send({Status: false, error: err.message,  msg: "you have entered a wrong token"})
     }
     
    return next()
 }
+// ================================================================================================================================//
 
 const MiddlewareMid3= async function(req,res,next){
 
     let header = req.headers
+    let query = req.query
 
     let token = header['x-api-key'] || header["X-API-KEY"]
 
     if(!token){
-        return res.status(404).send("Token is not present")
+        return res.status(404).send({Status: false, msg:"Token is not present"})
+    }
+    if(!query.authorId){
+        return res.status(404).send({Status: false, msg:"You have not entered the Author id in query params"})
+    }
+    if(!query.category){
+        return res.status(404).send({Status: false, msg:"You have not entered the category in query params"})
+    }
+    if(!query.subcategory){
+        return res.status(404).send({Status: false, msg:"You have not entered the subcategory in query params"})
+    }
+    if(!query.isPublished){
+        return res.status(404).send({Status: false, msg:"You have not entered the isPublished data in query params"})
+    }
+    if(!query.tags){
+        return res.status(404).send({Status: false, msg:"You have not entered the tags in query params"})
     }
 
-    let bloggerVerification =await BloggerModel.findOne(req.query)
+    let bloggerVerification =await BloggerModel.findOne({ $and: [{ categeory: query.categeory }, { authorId: query.authorId }, { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: query.isPublished }]})
 
     if(!bloggerVerification){
-        return res.status(404).send({msg: "Error: Blog does not exist"})
+        return res.status(404).send({Satus: false , msg: " Blog does not exist"})
     }
 
-
-    let AuthorDetail = await AuthorModel.findById(bloggerVerification.authorId ).select({ _id: 1 });
+    let AuthorDetail = await AuthorModel.findById(bloggerVerification.authorId).select({ _id: 1 });
    
     if (!AuthorDetail) {
-        return res.status(404).send("Creadential are not matching")
+        return res.status(404).send({Status: false, msg: "Author Id is not matching with database"})
     }
 
-    let DecodeToken = jwt.verify(token, "Functionup-Team52")
    
-    if (DecodeToken.author_id != AuthorDetail._id) {
-       
-        return res.status(401).send("Token Error: could not validate the authorization ")
+    console.log(": Authodetails  ", AuthorDetail)
+
+    
+    try{
+        let DecodeToken = jwt.verify(token, "Functionup-Team52")
+
+        if (DecodeToken.author_id != AuthorDetail._id) {
+      
+            return res.status(401).send({Status: false, msg:"this token is not valid for this author id"})
+        }
+    }
+    catch(err){
+        return res.status(404).send({Status: false, error: err.message,  msg: "you have entered a wrong token"})
     }
     
    return next()

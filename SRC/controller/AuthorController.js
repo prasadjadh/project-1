@@ -6,26 +6,27 @@ const AuthorModel = require("../model/author")
 const AuthorCreate = async function (req, res) {
     try {
         let body = req.body
-        if(Object.keys(body).length===0){
-            return res.status(404).send(" No data Found to create the account ")
+        if(Object.keys(body).length===0 && Object.values(body).length===0){
+            return res.status(404).send({Status: false, msg:"No data Found to create the account"})
         }
 
-        console.log("okayyy:    ",body)
         if(!body.fname){
-            return res.status(404).send({msg: "Error", Status: "First name is required"})
+            return res.status(404).send({status: false , msg: "First name is required"})
         }
         if(!body.lname){
-            return res.status(404).send({msg: "Error", Status: "Last name is required"})
+            return res.status(404).send({status: false, msg: "Last name is required"})
         }
         if(!body.title){
-            return res.status(404).send({msg: "Error", Status: "Title is required"})
+            return res.status(404).send({status: false, msg: "Title is required"})
         }
         if(!body.email){
-            return res.status(404).send({msg: "Error", Status: "Email id is required"})
+            return res.status(404).send({status: false, msg: " No Email found,   Email id is required"})
         }
         if(!body.password){
-            return res.status(404).send({msg: "Error", Status: "Password is required"})
+            return res.status(404).send({status: false, msg: "Password is required"})
         }
+        
+
         let author = await AuthorModel.create(body);
         return res.status(201).send({ author });
 
