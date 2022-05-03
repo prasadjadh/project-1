@@ -9,6 +9,16 @@ const BloggerCreate = async function (req, res) {
     try {
         let body = req.body
 
+        if(!body.title){
+            return res.status(404).send({msg: "Error", Status: " Please enter the title"})
+        }
+        if(!body.body){
+            return res.status(404).send({msg: "Error", Status: " Please enter the body"})
+        }
+        if(!body.categeory){
+            return res.status(404).send({msg: "Error", Status: " Please enter the category"})
+        }
+
         let createBlogg = await BloggerModel.create(body)
 
         if (body.isPublished === true) {
@@ -18,8 +28,9 @@ const BloggerCreate = async function (req, res) {
         if (body.isDeleted === true) {
             let CreateDeleteTime = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { deletedAt: new Date() } }, { new: true })
         }
+
         let Finaldata = await BloggerModel.find(body)
-        return res.status(200).send({ msg: Finaldata })
+        return res.status(200).send({Status: true, msg: Finaldata })
     }
     catch (err) {
         return res.status(403).send({ msg: "Error", error: err.message })
@@ -57,13 +68,13 @@ const UpdateData = async function (req, res) {
         let DataUpdate = await BloggerModel.findById(params.blogId)
 
         if (DataUpdate.isDeleted === true) {
-            return res.status(403).send({ msg: "error, isDeleted : true ", Status: "false" })
+            return res.status(403).send({ msg: "Error ", Status: "This is already deleted blog" })
         }
 
         let UpData = await BloggerModel.findByIdAndUpdate({ _id: params.blogId }, { title: body.title, body: body.body, isPublished: true, publishedAt: new Date(), $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
 
         if (!UpData) {
-            return res.status(404).send({ msg: "No Data Found", Status: false })
+            return res.status(404).send({ msg: "Error", Status: "No blog found" })
         }
 
         // Also we can use this one from line number 68 to 69
