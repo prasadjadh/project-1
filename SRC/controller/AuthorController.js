@@ -9,19 +9,21 @@ const AuthorCreate = async function (req, res) {
         if(Object.keys(body).length===0){
             return res.status(404).send(" No data Found to create the account ")
         }
-        if(!fname){
+
+        console.log("okayyy:    ",body)
+        if(!body.fname){
             return res.status(404).send({msg: "Error", Status: "First name is required"})
         }
-        if(!lname){
+        if(!body.lname){
             return res.status(404).send({msg: "Error", Status: "Last name is required"})
         }
-        if(!title){
+        if(!body.title){
             return res.status(404).send({msg: "Error", Status: "Title is required"})
         }
-        if(!Email){
+        if(!body.email){
             return res.status(404).send({msg: "Error", Status: "Email id is required"})
         }
-        if(!password){
+        if(!body.password){
             return res.status(404).send({msg: "Error", Status: "Password is required"})
         }
         let author = await AuthorModel.create(body);
