@@ -59,6 +59,9 @@ const MiddlewareMid1 = async function (req, res, next) {
         if(Object.keys(body).length===0){
             return res.status(404).send({Status: false, msg: "Sorry You have not entered any data into body"})
         }
+        if(!body.authorId){
+            return res.status(404).send({Status: false, msg: "Sorry please enter the author id"})
+        }
 
         let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }, {}] }).select({ _id: 1 });
 
