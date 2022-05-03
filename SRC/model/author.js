@@ -6,26 +6,31 @@ const Author= new mongoose.Schema({
     
     fname: {
         type:String,
-        required: true
+        required: "First Name is required",
+        trim: true
     }, 
     lname: {
         type: String,
-        required: true
+        required: "Last name is required",
+        trim: true
     },
     title:  {
         type:String,
         enum: ["Mr", "Mrs", "Miss"],
-        required:true
+        required:"Title is required",
     },                                        
     email:  {
         type: Email,
-        required: true,
+        required: "Email is required",
         unique: true,
+        lowercase: true,
+        trim: true
     },
                                            
     password:{
         type: String,
-        required: true
+        required: "password is mandatory",
+        trim: true
     }
 },{timestamps:true});
 

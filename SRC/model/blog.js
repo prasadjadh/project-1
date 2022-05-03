@@ -4,26 +4,28 @@ const ObjectId = mongoose.Schema.Types.ObjectId
 const BlogSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: "Title is required",
+        trim: true
     },
     body: {
         type: String,
-        required: true
+        required: "Body is required",
+        trim: true
     },
     authorId: {
         type: ObjectId,
         ref: 'author',
-        required: true
+        required: "Author id is required"
     },
-    publishedAt: Date,
-    deletedAt: Date,
-    tags: [String],
+    publishedAt: {type: Date, default: false},
+    deletedAt:{type: Date, default: false},
+    tags: [{type: String, trim: true}],
     category: {
-        type: [String],
-        required: true,
-        validate: [(value) => value.length > 0, 'Category is mandatory']
+        type: String,
+        required: "Category is required",
+        trim: true,
     },
-    subcategory: [String],
+    subcategory: [{type: String, trim:true}],
     isDeleted: {
         type: Boolean,
         default: false
@@ -37,5 +39,5 @@ const BlogSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-module.exports = mongoose.model("blogger", BlogSchema)
+module.exports = mongoose.model("Blog", BlogSchema)
 

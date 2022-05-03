@@ -22,7 +22,7 @@ const login = async function (req, res) {
     
         }, "Functionup-Team52")
     
-        res.setHeader("x-api-key", token)
+        res.setHeader("x-api-key", token)    /// i have to ask this one
         res.status(201).send(token)
 
     }
@@ -41,6 +41,10 @@ try{
     let header = req.headers
 
     let token = header['x-api-key'] || header["X-API-KEY"]
+
+    if(!token){
+        return res.status(404).send("Token is not present")
+    }
 
     let bloggerVerification =await BloggerModel.findOne(req.query)
     console.log("bloggerVerification:  ",bloggerVerification)
@@ -68,7 +72,7 @@ try{
    return next()
 
     }
-catch (err) {
+    catch (err) {
     return res.status(403).send({ msg: "Error", error: err.message })
     }
 
@@ -77,7 +81,12 @@ catch (err) {
 const MiddlewareMid2= async function(req,res,next){
 
     let header = req.headers
+
     let token = header['x-api-key'] || header["X-API-KEY"]
+
+    if(!token){
+        return res.status(404).send("Token is not present")
+    }
 
     let bloggerVerification =await BloggerModel.findById(req.params.blogId)
 
