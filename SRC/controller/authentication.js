@@ -9,6 +9,17 @@ const { query } = require('express')
 const login = async function (req, res) {
     try{
         let body = req.body
+      
+        if(Object.keys(body).length===0 && Object.values(body).length===0){
+            return res.status(404).send({Status: false, msg:"No data Found into body"})
+        }
+
+        if(!body.password){
+            return res.status(404).send({Status: false, msg: "You have not entered the password "})
+        }
+        if(!body.email){
+            return res.status(404).send({Status: false, msg: "You have not entered the email id"})
+        }
 
         let authorization = await AuthorModel.findOne({ email: body.email, password: body.password })
 
@@ -45,6 +56,11 @@ try{
     if(!token){
         return res.status(404).send({Status: false, msg: "Token is not present"})
     }
+
+    if(Object.keys(body).length===0 && Object.values(body).length===0){
+        return res.status(404).send({Status: false, msg:"No data Found to create the account"})
+    }
+
     if(!body.authorId){
         return res.status(404).send({ Satus: false, msg: "Auhtor Id must be present" })
     }
@@ -156,7 +172,51 @@ const MiddlewareMid3= async function(req,res,next){
     }
 
    
-    console.log(": Authodetails  ", AuthorDetail)
+    // console.log(": Authodetails  ", AuthorDetail)
+
+    
+    try{
+        let DecodeToken = jwt.verify(token, "Functionup-Team52")
+
+        if (DecodeToken.author_id != AuthorDetail._id) {
+      
+            return res.status(401).send({Status: false, msg:"this token is not valid for this author id"})
+        }
+    }
+    catch(err){
+        return res.status(404).send({Status: false, error: err.message,  msg: "you have entered a wrong token"})
+    }
+    
+   return next()
+}
+
+const MiddlewareMid4= async function(req,res,next){
+
+    let header = req.headers
+    let query = req.query
+    console.log("query:     ", query)
+
+    let token = header['x-api-key'] || header["X-API-KEY"]
+
+    if(!token){
+        return res.status(404).send({Status: false, msg:"Token is not present"})
+    }
+    
+    if(Object.keys(query).length===0){
+    return res.status(404).send({Status: false, msg: "You have not entered the any data into query params"})
+    }
+
+    let bloggerVerification =await BloggerModel.findOne(query)
+
+    if(!bloggerVerification){
+        return res.status(404).send({Satus: false , msg: " Blog does not exist"})
+    }
+
+    let AuthorDetail = await AuthorModel.findById(bloggerVerification.authorId).select({ _id: 1 });
+   
+    if (!AuthorDetail) {
+        return res.status(404).send({Status: false, msg: "Author Id is not matching with database"})
+    }
 
     
     try{
@@ -177,7 +237,9 @@ const MiddlewareMid3= async function(req,res,next){
 
 
 
+
 module.exports.login = login
 module.exports.MiddlewareMid1 = MiddlewareMid1
 module.exports.MiddlewareMid2=MiddlewareMid2
 module.exports.MiddlewareMid3=MiddlewareMid3
+module.exports.MiddlewareMid4=MiddlewareMid4

@@ -20,7 +20,7 @@ const BloggerCreate = async function (req, res) {
         }
 
         let createBlogg = await BloggerModel.create(body)
-        console.log("mai yha hu:    ",createBlogg)
+       // console.log("mai yha hu:    ",createBlogg)
 
         if (body.isPublished === true) {
             let Update = await BloggerModel.updateMany({ authorId: body.authorId }, { $set: { publishedAt: new Date() } }, { new: true })
@@ -119,10 +119,10 @@ const deleted = async function (req, res) {
     try {
         let query = req.query
 
-
         if(query.isPublished === "true"){
             return res.status(404).send({Status: false, msg: "Sorry you are not allowed to delete this blog "})
         }
+
 
         let delDeatails = await BloggerModel.findOneAndUpdate({ $and: [{ categeory: query.categeory }, { authorId: query.authorId }, { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: query.isPublished }] }, { isDeleted: true, deletedAt: new Date() }, { new: true })
 
