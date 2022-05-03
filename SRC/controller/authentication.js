@@ -45,21 +45,15 @@ try{
     if(!token){
         return res.status(404).send("Token is not present")
     }
-
-    let bloggerVerification =await BloggerModel.findOne(req.query)
-    console.log("bloggerVerification:  ",bloggerVerification)
-
-    if(!bloggerVerification){
-        return res.status(404).send({msg: "Error: Blog does not exist"})
+    if(!body.authorId){
+        return res.status(404).send({msg: "Error", Satus: "Auhtor Id must be present"})
     }
 
-
-
-    let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId },{_id: bloggerVerification.authorId}] }).select({ _id: 1 });
+    let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }] }).select({ _id: 1 });
    
   
     if (!AuthorDetail) {
-        return res.status(404).send("Creadential are not matching")
+        return res.status(404).send({msg: "Error", Satus: "Author Id is not valid"})
     }
    
     let DecodeToken = jwt.verify(token, "Functionup-Team52")
@@ -111,9 +105,43 @@ const MiddlewareMid2= async function(req,res,next){
    return next()
 }
 
+const MiddlewareMid3= async function(req,res,next){
+
+    let header = req.headers
+
+    let token = header['x-api-key'] || header["X-API-KEY"]
+
+    if(!token){
+        return res.status(404).send("Token is not present")
+    }
+
+    let bloggerVerification =await BloggerModel.findOne(req.query)
+
+    if(!bloggerVerification){
+        return res.status(404).send({msg: "Error: Blog does not exist"})
+    }
+
+
+    let AuthorDetail = await AuthorModel.findById(bloggerVerification.authorId ).select({ _id: 1 });
+   
+    if (!AuthorDetail) {
+        return res.status(404).send("Creadential are not matching")
+    }
+
+    let DecodeToken = jwt.verify(token, "Functionup-Team52")
+   
+    if (DecodeToken.author_id != AuthorDetail._id) {
+       
+        return res.status(401).send("Token Error: could not validate the authorization ")
+    }
+    
+   return next()
+}
+
 
 
 
 module.exports.login = login
 module.exports.MiddlewareMid1 = MiddlewareMid1
 module.exports.MiddlewareMid2=MiddlewareMid2
+module.exports.MiddlewareMid3=MiddlewareMid3

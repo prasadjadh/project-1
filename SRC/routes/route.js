@@ -4,17 +4,17 @@ const AuthorController=require("../controller/AuthorController")
 const BloggerController=require("../controller/BloggerController")
 const Auth = require('../controller/authentication')
 
-router.post("/AuthorCreate",AuthorController.AuthorCreate)
+router.post("/authors",AuthorController.AuthorCreate)    // For author creation
 
-router.post("/BloggerCreate",Auth.MiddlewareMid1,BloggerController.BloggerCreate)
+router.post("/blogs",Auth.MiddlewareMid1,BloggerController.BloggerCreate)   // for blog creation
 
-router.get("/GetData",Auth.MiddlewareMid1,BloggerController.GetData)
+router.get("/blogs",Auth.MiddlewareMid3,BloggerController.GetData)              // for getting a blogs
 
 router.put("/blogs/:blogId",Auth.MiddlewareMid2,BloggerController.UpdateData)
 
 router.delete("/blogs/:blogId",Auth.MiddlewareMid2,BloggerController.delData)
 
-router.delete("/blogs",Auth.MiddlewareMid1,BloggerController.DataDelet)
+router.delete("/blogs",Auth.MiddlewareMid3,BloggerController.DataDelet)
 
 router.post('/login', Auth.login)
 

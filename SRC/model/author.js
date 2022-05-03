@@ -29,7 +29,7 @@ const Author= new mongoose.Schema({
                                            
     password:{
         type: String,
-        required: "password is mandatory",
+        required: "Password is mandatory",
         trim: true
     }
 },{timestamps:true});
