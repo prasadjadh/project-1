@@ -30,6 +30,7 @@ const login = async function (req, res) {
         let token = jwt.sign({
 
             author_id: authorization._id,
+            author_email: authorization.email
 
         }, "Functionup-Team52")
 
@@ -63,16 +64,16 @@ const MiddlewareMid1 = async function (req, res, next) {
             return res.status(404).send({Status: false, msg: "Sorry please enter the author id"})
         }
 
-        let AuthorDetail = await AuthorModel.findOne({ $or: [{ email: body.email, password: body.password }, { _id: body.authorId }, {}] }).select({ _id: 1 });
+        let AuthorDetail = await AuthorModel.findById(body.authorId)
 
-
+        console.log("authodetail  ",AuthorDetail._id)
         if (!AuthorDetail) {
             return res.status(404).send({ Satus: false, msg: "Author Id is not valid" })
         }
 
         try {
             let DecodeToken = jwt.verify(token, "Functionup-Team52")
-
+            console.log("DecodeToken  ",DecodeToken.author_id)
             if (DecodeToken.author_id != AuthorDetail._id) {
 
                 return res.status(401).send({ Status: false, msg: "this token is not valid for this author id" })
@@ -81,7 +82,7 @@ const MiddlewareMid1 = async function (req, res, next) {
         catch (err) {
             return res.status(404).send({ Status: false, error: err.message, msg: "you have entered a wrong token" })
         }
-
+        console.log("passing middleware")
         return next()
 
     }
