@@ -10,6 +10,8 @@ const login = async function (req, res) {
     try {
         let body = req.body
 
+        let emailCheck= /^[A-Za-z_.0-9]{2,}@[A-Za-z]{2,12}[.]{1}[A-Za-z.]{2,5}$/
+
         if (Object.keys(body).length === 0 && Object.values(body).length === 0) {
             return res.status(404).send({ Status: false, msg: "No data Found into body" })
         }
@@ -19,6 +21,11 @@ const login = async function (req, res) {
         }
         if (!body.email) {
             return res.status(404).send({ Status: false, msg: "You have not entered the email id" })
+        }
+        // regex in validation of Email
+
+        if(!emailCheck.test(body.email)){
+            return res.status(403).send({Status: false, msg:" email: Please put a valid email"})
         }
 
         let authorization = await AuthorModel.findOne({ email: body.email, password: body.password })
@@ -64,15 +71,16 @@ const MiddlewareMid1 = async function (req, res, next) {
             return res.status(404).send({Status: false, msg: "Sorry please enter the author id"})
         }
 
-        let AuthorDetail = await AuthorModel.findById(body.authorId)
+        let AuthorDetail = await AuthorModel.findById({_id:body.authorId})
 
-        console.log("authodetail  ",AuthorDetail._id)
+        console.log("authodetail  ",AuthorDetail)
         if (!AuthorDetail) {
             return res.status(404).send({ Satus: false, msg: "Author Id is not valid" })
         }
 
         try {
             let DecodeToken = jwt.verify(token, "Functionup-Team52")
+            
             console.log("DecodeToken  ",DecodeToken.author_id)
             if (DecodeToken.author_id != AuthorDetail._id) {
 
@@ -145,8 +153,13 @@ const MiddlewareMid3 = async function (req, res, next) {
             return res.status(404).send({ Status: false, msg: "Token is not present" });
         }
 
+        if(Object.keys(req.query).length===0){
+            return res.status(404).send({ Status: false, msg: "Request query is empty" })
+        }
+       // console.log("query:    ",req.query)
+
         let bloggerVerification = await BloggerModel.findOne(req.query)
-        console.log("help:    ",bloggerVerification)
+       // console.log("help:    ",bloggerVerification)
 
         if (!bloggerVerification) {
             return res.status(404).send({ Status: false, msg: "Error: Blog does not exist" })
@@ -169,7 +182,7 @@ const MiddlewareMid3 = async function (req, res, next) {
         catch (err) {
             return res.status(404).send({ Status: false, error: err.message, msg: "you have entered a wrong token" })
         }
-        console.log("passing middleware")
+        //console.log("passing middleware")
 
         return next()
     } catch (err) {

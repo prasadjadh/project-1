@@ -8,6 +8,10 @@ const BloggerCreate = async function (req, res) {
 
     try {
         let body = req.body
+
+        let StringCheckWihoutSpace= /^[A-Za-z]{1,}$/
+        let StringAllowwithSpace= /^[A-Z a-z]{1,}$/
+        let emailCheck= /^[A-Za-z_.0-9]{2,}@[A-Za-z]{2,12}[.]{1}[A-Za-z.]{2,5}$/
       
         if(!body.title){
             return res.status(404).send({msg: "Error", Status: " Please enter the title"})
@@ -17,6 +21,18 @@ const BloggerCreate = async function (req, res) {
         }
         if(!body.category){
             return res.status(404).send({msg: "Error", Status: " Please enter the category"})
+        }
+
+        // regex use
+
+        if(!StringCheckWihoutSpace.test(body.title)){
+            return res.status(403).send({Status: false, msg:" title: Special Characters or Space or comma (,)  are not allowed"})
+        }
+        if(!StringAllowwithSpace.test(body.body)){
+            return res.status(403).send({Status: false, msg:" body: No Special Characters or space are allowed"})
+        }
+        if(!StringAllowwithSpace.test(body.category)){
+            return res.status(403).send({Status: false, msg:" category: No Special Characters are allowed"})
         }
 
         let createBlogg = await BloggerModel.create(body)
