@@ -9,9 +9,9 @@ const BloggerCreate = async function (req, res) {
     try {
         let body = req.body
 
-        let StringCheckWihoutSpace= /^[A-Za-z]{1,}$/
-        let StringAllowwithSpace= /^[A-Z a-z]{1,}$/
-        let emailCheck= /^[A-Za-z_.0-9]{2,}@[A-Za-z]{2,12}[.]{1}[A-Za-z.]{2,5}$/
+        let StringCheckWithSpace= /^[A-Za-z ]{1,}$/
+        let StringAllowwithSpace= /^[A-Za-z ,-]{1,}$/
+       
       
         if(!body.title){
             return res.status(404).send({msg: "Error", Status: " Please enter the title"})
@@ -25,10 +25,10 @@ const BloggerCreate = async function (req, res) {
 
         // regex use
 
-        if(!StringCheckWihoutSpace.test(body.title)){
+        if(!StringAllowwithSpace.test(body.title)){
             return res.status(403).send({Status: false, msg:" title: Special Characters or Space or comma (,)  are not allowed"})
         }
-        if(!StringAllowwithSpace.test(body.body)){
+        if(!StringCheckWithSpace.test(body.body)){
             return res.status(403).send({Status: false, msg:" body: No Special Characters or space are allowed"})
         }
         if(!StringAllowwithSpace.test(body.category)){
@@ -46,10 +46,10 @@ const BloggerCreate = async function (req, res) {
         }
 
         let Finaldata = await BloggerModel.find(body)
-        return res.status(200).send({Status: true, msg: Finaldata })
+        return res.status(200).send({Status: true, data: Finaldata })
     }
     catch (err) {
-        return res.status(403).send({ msg: "Error", error: err.message })
+        return res.status(500).send({ Status: false, msg: err.message })
     }
 }
 
@@ -62,14 +62,14 @@ const GetData = async function (req, res) {
         let GetRecord = await BloggerModel.find({ $and: [{ isDeleted: false }, { isPublished: true }, query] }).populate("authorId")
 
         if (GetRecord.length > 0) {
-            return res.status(200).send({Status: true , msg: GetRecord })
+            return res.status(200).send({Status: true , data: GetRecord })
         }
         else {
-            return res.status(404).send({Status: false, msg:"No such blog exist"});
+            return res.status(400).send({Status: false, msg:"No such blog exist"});
         }
     }
     catch (err) {
-        return res.status(403).send({ msg: "Error", error: err.message })
+        return res.status(500).send({Status: false, msg: "Error", error: err.message })
     }
 }
 
@@ -84,10 +84,10 @@ const UpdateData = async function (req, res) {
         let DataUpdate = await BloggerModel.findById(params.blogId)
 
         if (DataUpdate.isDeleted === true) {
-            return res.status(403).send({ Status: false , msg: "We cant Published a deleted blog" })
+            return res.status(400).send({ Status: false , msg: "We cant Published a deleted blog" })
         }
         if(DataUpdate.isPublished === true){
-            return res.status(403).send({Status: false, msg: "this is already Published"})
+            return res.status(400).send({Status: false, msg: "this is already Published"})
         }
 
         let UpData = await BloggerModel.findByIdAndUpdate({ _id: params.blogId }, { title: body.title, body: body.body, isPublished: true, publishedAt: new Date(), $push: { tags: body.tags, subcategory: body.subcategory } }, { new: true })
@@ -100,10 +100,10 @@ const UpdateData = async function (req, res) {
         // let setData= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$set:{title:body.title,body:body.body,publishedAt:dateandTime,isPublished:true}})
         // let Pushdata= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$push:{tags:body.tags,subcategory:body.subcategory}},{new:true,upsert:true})
 
-        return res.status(201).send({Status: true,  msg: UpData })
+        return res.status(201).send({Status: true,  data: UpData })
     }
     catch (err) {
-        return res.status(403).send({ msg: "Error", error: err.message })
+        return res.status(500).send({Status:false, msg: "Error", error: err.message })
     }
 }
 
@@ -116,15 +116,15 @@ const delData = async function (req, res) {
         let verification = await BloggerModel.findById(id)
 
         if (verification.isDeleted === true) {
-            return res.status(200).send({Status: false, msg: " already deleted"})
+            return res.status(400).send({Status: false, msg: " already deleted"})
         }
         else {
             let FinalResult = await BloggerModel.findByIdAndUpdate(id, { isDeleted: true, deletedAt: new Date() }, { new: true })
-            return res.status(201).send({ Status: true, msg: " Successfully deleted the blog ", FinalResult })
+            return res.status(201).send({ Status: true, data: " Successfully deleted the blog ", FinalResult })
         }
     }
     catch (err) {
-        return res.status(403).send({ msg: "Error", error: err.message })
+        return res.status(500).send({Status:false, msg: "Error", error: err.message })
     }
 }
 
@@ -135,23 +135,23 @@ const deleted = async function (req, res) {
         let query = req.query
 // Validation Part 
         if(!query.authorId){
-            return res.status(404).send({Status: false, msg:"You have not entered the Author id in query params"})
+            return res.status(400).send({Status: false, msg:"You have not entered the Author id in query params"})
         }
         if(!query.category){
-            return res.status(404).send({Status: false, msg:"You have not entered the category in query params"})
+            return res.status(400).send({Status: false, msg:"You have not entered the category in query params"})
         }
         if(!query.subcategory){
-            return res.status(404).send({Status: false, msg:"You have not entered the subcategory in query params"})
+            return res.status(400).send({Status: false, msg:"You have not entered the subcategory in query params"})
         }
         if(!query.isPublished){
-            return res.status(404).send({Status: false, msg:"You have not entered the isPublished data in query params"})
+            return res.status(400).send({Status: false, msg:"You have not entered the isPublished data in query params"})
         }
         if(!query.tags){
-            return res.status(404).send({Status: false, msg:"You have not entered the tags in query params"})
+            return res.status(400).send({Status: false, msg:"You have not entered the tags in query params"})
         }
 
         if(query.isPublished === "true"){
-            return res.status(404).send({Status: false, msg: "Sorry you are not allowed to delete this blog "})
+            return res.status(400).send({Status: false, msg: "Sorry you are not allowed to delete this blog "})
         }
 
 
@@ -160,10 +160,10 @@ const deleted = async function (req, res) {
         if (!delDeatails) {
             return res.status(404).send({ Status: false, msg: " Data doesn't exist" })
         }
-        res.status(200).send({ Status: true,  msg: delDeatails })
+        res.status(200).send({ Status: true,  data: delDeatails })
     }
     catch (err) {
-        return res.status(403).send({ msg: "Error", error: err.message })
+        return res.status(403).send({Status:false, msg: "Error", error: err.message })
     }
 
 }

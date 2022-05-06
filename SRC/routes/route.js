@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const AuthorController=require("../controller/AuthorController")
 const BloggerController=require("../controller/BloggerController")
-const Auth = require('../controller/authentication')
+const Auth = require('../controller/AllMiddleware')
 
 router.post("/authors",AuthorController.AuthorCreate)    // For author creation
 
