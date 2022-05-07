@@ -47,8 +47,9 @@ const AuthorCreate = async function (req, res) {
         }
 
         let checkEmail = await AuthorModel.findOne({ email: body.email })
+        console.log(checkEmail);
         if (checkEmail) {
-            if (checkEmail.email === body.email) {
+            if (checkEmail.email == body.email) {
                 return res.status(403).send({ Status: false, msg: " This email has been used already, please use another email" })
             }
         }

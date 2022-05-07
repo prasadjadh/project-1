@@ -95,8 +95,8 @@ const UpdateData = async function (req, res) {
         if (!UpData) {
             return res.status(404).send({ Status: false , msg: "No blog found" })
         }
-
-        // Also we can use this one from line number 68 to 69
+                 // OR
+      
         // let setData= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$set:{title:body.title,body:body.body,publishedAt:dateandTime,isPublished:true}})
         // let Pushdata= await BloggerModel.findOneAndUpdate({_id:params.blogId},{$push:{tags:body.tags,subcategory:body.subcategory}},{new:true,upsert:true})
 

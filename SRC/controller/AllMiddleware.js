@@ -159,7 +159,7 @@ const MiddlewareMid3 = async function (req, res, next) {
 
 
         let bloggerVerification = await BloggerModel.findOne(req.query)
-       
+       console.log(bloggerVerification);
 
         if (!bloggerVerification) {
             return res.status(400).send({ Status: false, msg: "Error: Blog does not exist" })
